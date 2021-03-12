@@ -3,15 +3,16 @@ from sklearn.cluster import KMeans
 import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
 """
 Split into sentences
 Remove stop words and lemmatize and to lower
 """
+
+
 def preprocessing(article):
     processedSentences = []
     sentences = []
-    nlp = spacy.load('en_core_web_lg') # ~700mb    
+    nlp = spacy.load('en_core_web_lg')  # ~700mb
     # nlp = spacy.load('en_core_web_sm')  # ~40+ mb
     doc = nlp(article)
     sen = [sent.text.strip() for sent in doc.sents]
@@ -24,7 +25,7 @@ def preprocessing(article):
 
     # print(type(sentences))
     stopwords = nlp.Defaults.stop_words
-    
+
     for sentence in sentences:
         # print(type(sentence))
         doc = nlp(sentence)
@@ -41,6 +42,7 @@ def preprocessing(article):
     # print(processedSentences)
     return processedSentences, sentences
 
+
 """
 TF-IDF 
 
@@ -52,6 +54,8 @@ Assume general form: (A,B) C
 A: Document index B: Specific word-vector index in its vocab C: TFIDF score for word B in document A
 This is a sparse matrix. It indicates the tfidf score for all non-zero values in the word vector for each document.
 """
+
+
 def tfIdf(processedSentences):
     # create tfidf matrix from the processed sentences
     vectorizer = TfidfVectorizer()
@@ -59,9 +63,12 @@ def tfIdf(processedSentences):
     # print(tfidf_matrix)
     return tfidf_matrix
 
+
 """
 Apply K Means Clustering
 """
+
+
 def kMeans(tfidf_matrix, cluster_count=7):
     kMeansCluster = KMeans(n_clusters=cluster_count)
     kMeansCluster.fit(tfidf_matrix)
@@ -69,10 +76,13 @@ def kMeans(tfidf_matrix, cluster_count=7):
     # print(clusters)
     return clusters
 
+
 """ 
 Create new dictionary that tracks which cluster each sentence belongs to keeps copy of original sentences and stemmed sentences 
 sentenceDictionary { idx: { text: String, lemmetized: String, cluster: Number } }
 """
+
+
 def sentenceDict(sentences, clusters, processedSentences):
     sentenceDictionary = {}
     for idx, sentence in enumerate(sentences):
@@ -83,10 +93,13 @@ def sentenceDict(sentences, clusters, processedSentences):
     # print(sentenceDictionary)
     return sentenceDictionary
 
+
 """
 Create new dictionary that contains 1 entry for each cluster each key in dictionary will point to array of sentences, all of which belong to that cluster, 
 we attach the index to the sentenceDictionary object so we can recall the original sentence
 """
+
+
 def clusterDict(sentenceDictionary):
     clusterDictionary = {}
     for key, sentence in sentenceDictionary.items():
@@ -98,7 +111,6 @@ def clusterDict(sentenceDictionary):
     return clusterDictionary
 
 
-
 """
 ####################################
 # Calculate Cosine Similarity Scores
@@ -107,6 +119,8 @@ def clusterDict(sentenceDictionary):
 # For each cluster of sentences,
 # Find the sentence with highet cosine similarity over all sentences in cluster
 """
+
+
 def calCosineSim(clusterDictionary):
     vectorizer = TfidfVectorizer()
     maxCosineScores = {}
@@ -127,7 +141,6 @@ def calCosineSim(clusterDictionary):
     return maxCosineScores
 
 
-
 """
 Construct Document Summary
 
@@ -135,6 +148,8 @@ for every cluster's max cosine score,
 find the corresponding original sentence
 
 """
+
+
 def constructResult(maxCosineScores, clusterDictionary, sentenceDictionary, sentences):
     resultIndices = []
     i = 0
@@ -158,7 +173,6 @@ def constructResult(maxCosineScores, clusterDictionary, sentenceDictionary, sent
     return result
 
 
-
 # def main():
 def summarizer(article):
     # f = open("001.txt", "r")
@@ -167,7 +181,7 @@ def summarizer(article):
     processedSentences, sentences = preprocessing(article)
     # print("\n", processedSentences) 
     # print("\n", sentences) 
-    
+
     tfidf_matrix = tfIdf(processedSentences)
 
     clusters = kMeans(tfidf_matrix, 7)
@@ -179,7 +193,7 @@ def summarizer(article):
     # print("\nCluster dictionary \n{}".format(clusterDictionary))
     maxCosineScores = calCosineSim(clusterDictionary)
 
-    result = constructResult(maxCosineScores, clusterDictionary, sentenceDictionary,sentences) 
+    result = constructResult(maxCosineScores, clusterDictionary, sentenceDictionary, sentences)
     # print("\n\nThe resulting summary is: \n")
     # print(result)
     return result
