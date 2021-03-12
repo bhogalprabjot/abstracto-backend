@@ -12,8 +12,8 @@ Remove stop words and lemmatize and to lower
 def preprocessing(article):
     processedSentences = []
     sentences = []
-    nlp = spacy.load('en_core_web_lg')  # ~700mb
-    # nlp = spacy.load('en_core_web_sm')  # ~40+ mb
+    # nlp = spacy.load('en_core_web_lg')  # ~700mb
+    nlp = spacy.load('en_core_web_sm')  # ~40+ mb
     doc = nlp(article)
     sen = [sent.text.strip() for sent in doc.sents]
     sentences = []
