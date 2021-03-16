@@ -1,12 +1,14 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 from Summarizer.code import summarizer
+from web_scrapper.scrapper import scrapper
 
 app = Flask(__name__)
 
 api = Api(app)
 
 article = []
+url = ""
 
 
 class Article(Resource):
@@ -33,8 +35,25 @@ class Summary(Resource):
         return {"summary": None}, 404
 
 
+class web_scrapper(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('url',
+                        type=str,
+                        required=True,
+                        help="This field cannot be left blank!"
+                        )
+
+    def post(self):
+        global article, url
+        data = web_scrapper.parser.parse_args()
+        url += data['url']
+        article = scrapper(url)
+        return article, 201
+
+
 api.add_resource(Article, '/article')
 api.add_resource(Summary, '/summary', )
+api.add_resource(web_scrapper, '/scrapper', )
 
 if __name__ == '__main__':
     app.run(debug=True)
