@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
-from Summarizer.code import summarizer
+from summarizer.summarizer import summarizer
 from web_scrapper.scrapper import scrapper
 
 app = Flask(__name__)
@@ -30,13 +30,13 @@ class Summary(Resource):
     def get(self):
         if article:
             result = summarizer(article[0])
-            print(result)
+            # print(result)
             if result:
                 return {"summary": result}, 200
         return {"summary": None}, 404
 
 
-class web_scrapper(Resource):
+class WebScraper(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('url',
                         type=str,
@@ -45,7 +45,7 @@ class web_scrapper(Resource):
                         )
 
     def post(self):
-        data = web_scrapper.parser.parse_args()
+        data = WebScraper.parser.parse_args()
         url.append(data['url'])
         article.clear()
         article.append(scrapper(url[0]))
@@ -54,7 +54,7 @@ class web_scrapper(Resource):
 
 api.add_resource(Article, '/article')
 api.add_resource(Summary, '/summary', )
-api.add_resource(web_scrapper, '/scrapper', )
+api.add_resource(WebScraper, '/scrapper', )
 
 if __name__ == '__main__':
     app.run(debug=True)
