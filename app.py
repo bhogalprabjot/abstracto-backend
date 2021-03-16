@@ -8,7 +8,7 @@ app = Flask(__name__)
 api = Api(app)
 
 article = []
-url = ""
+url = []
 
 
 class Article(Resource):
@@ -29,7 +29,7 @@ class Summary(Resource):
     def get(self):
         if article:
             result = summarizer(article[0])
-            # print(result)
+            print(result)
             if result:
                 return {"summary": result}, 200
         return {"summary": None}, 404
@@ -44,11 +44,10 @@ class web_scrapper(Resource):
                         )
 
     def post(self):
-        global article, url
         data = web_scrapper.parser.parse_args()
-        url += data['url']
-        article = scrapper(url)
-        return article, 201
+        url.append(data['url'])
+        article.append(scrapper(url[0]))
+        return article[0], 201
 
 
 api.add_resource(Article, '/article')
