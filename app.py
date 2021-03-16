@@ -21,6 +21,7 @@ class Article(Resource):
 
     def post(self):
         data = Article.parser.parse_args()
+        article.clear()
         article.append(data['article'])
         return data, 201
 
@@ -46,6 +47,7 @@ class web_scrapper(Resource):
     def post(self):
         data = web_scrapper.parser.parse_args()
         url.append(data['url'])
+        article.clear()
         article.append(scrapper(url[0]))
         return article[0], 201
 
