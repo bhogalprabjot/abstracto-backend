@@ -53,6 +53,7 @@ class WebScraper(Resource):
         url.append(data['url'])
         article.clear()
         article.append(scrapper(url[0]))
+        url.clear()
         return article[0], 201
 
 
