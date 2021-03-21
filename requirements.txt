@@ -43,3 +43,4 @@ Werkzeug==1.0.1
 bs4==0.0.1
 beautifulsoup4==4.9.3
 html5lib==1.0.1
+flask_cors==3.0.10
