@@ -2,8 +2,12 @@ from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 from summarizer.summarizer import summarizer
 from web_scrapper.scrapper import scrapper
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+# to allow CORS
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 api = Api(app)
 
