@@ -1,8 +1,11 @@
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import KMeans
+#from sklearn.cluster import KMeans
 import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
-
+from sklearn.mixture import GaussianMixture
+import pickle
+import numpy as np
+import math
 """
 Split into sentences
 Remove stop words and lemmatize and to lower
@@ -69,10 +72,13 @@ Apply K Means Clustering
 """
 
 
-def kMeans(tfidf_matrix, cluster_count=7):
-    kMeansCluster = KMeans(n_clusters=cluster_count)
-    kMeansCluster.fit(tfidf_matrix)
-    clusters = kMeansCluster.labels_.tolist()
+def GMM(tfidf_matrix, cluster_count):
+    Cluster = GaussianMixture(n_components = cluster_count)
+    Cluster.fit(tfidf_matrix.toarray())
+    clusters = Cluster.predict(tfidf_matrix.toarray())
+    # kMeansCluster = KMeans(n_clusters=cluster_count)
+    # kMeansCluster.fit(tfidf_matrix)
+    # clusters = kMeansCluster.labels_.tolist()
     # print(clusters)
     return clusters
 
@@ -184,7 +190,12 @@ def summarizer(article):
 
     tfidf_matrix = tfIdf(processedSentences)
 
-    clusters = kMeans(tfidf_matrix, 7)
+    model = pickle.load(open('Summarizer/model.pkl', 'rb'))
+    arr = np.array([len(sentences)])
+    arr_2d = np.reshape(arr, (-1,1))
+    k = model.predict(arr_2d)
+    k1= math.floor(k[0])
+    clusters = GMM(tfidf_matrix, k1)
 
     sentenceDictionary = sentenceDict(sentences, clusters, processedSentences)
     # print("\nsentence dictionary \n{}".format(sentenceDictionary))
