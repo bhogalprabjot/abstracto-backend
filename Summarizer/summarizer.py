@@ -68,7 +68,7 @@ def tfIdf(processedSentences):
 
 
 """
-Apply K Means Clustering
+Apply Gaussian Mixture Models (GMM) Clustering
 """
 
 
@@ -76,10 +76,6 @@ def GMM(tfidf_matrix, cluster_count):
     Cluster = GaussianMixture(n_components = cluster_count)
     Cluster.fit(tfidf_matrix.toarray())
     clusters = Cluster.predict(tfidf_matrix.toarray())
-    # kMeansCluster = KMeans(n_clusters=cluster_count)
-    # kMeansCluster.fit(tfidf_matrix)
-    # clusters = kMeansCluster.labels_.tolist()
-    # print(clusters)
     return clusters
 
 
@@ -190,11 +186,15 @@ def summarizer(article):
 
     tfidf_matrix = tfIdf(processedSentences)
 
+    '''
+    Linear Regression model for finding number of clusters 
+    '''
     model = pickle.load(open('Summarizer/model.pkl', 'rb'))
     arr = np.array([len(sentences)])
     arr_2d = np.reshape(arr, (-1,1))
     k = model.predict(arr_2d)
     k1= math.floor(k[0])
+
     clusters = GMM(tfidf_matrix, k1)
 
     sentenceDictionary = sentenceDict(sentences, clusters, processedSentences)
