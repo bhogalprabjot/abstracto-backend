@@ -3,7 +3,7 @@ from flask_restful import Resource, Api, reqparse
 from Summarizer.summarizer import summarizer
 from web_scrapper.scrapper import scrapper
 from flask_cors import CORS
-
+from ocr.ocr import ocr
 app = Flask(__name__)
 
 # to allow CORS
@@ -57,9 +57,28 @@ class WebScraper(Resource):
         return article[0], 201
 
 
+class Ocr(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('imageUrl',
+                        type=str,
+                        required=True,
+                        help="This field cannot be left blank!"
+                        )
+
+    def post(self):
+        data = Ocr.parser.parse_args()
+        url.append(data['imageUrl'])
+        article.clear()
+        article.append(ocr(url[0]))
+        url.clear()
+        print(article[0])
+        return article[0], 201
+
+
 api.add_resource(Article, '/article')
 api.add_resource(Summary, '/summary', )
 api.add_resource(WebScraper, '/scrapper', )
+api.add_resource(Ocr, '/image', )
 
 if __name__ == '__main__':
     app.run(debug=True)
