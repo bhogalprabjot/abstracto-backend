@@ -26,7 +26,7 @@ def ocr(url):
     # Downloading image from firestore
     file_name = "test_image"
     # url = "https://firebasestorage.googleapis.com/v0/b/abstracto-db.appspot.com/o/7.jpg?alt=media&token=1814fdb8-869c-4ec5-892a-7bb7e781868b"
-    file_path = "C:/Users/Prabjot Singh/Documents/FY project/AbstractoBackend/"
+    file_path = "C:/Users/Prabjot Singh/Documents/FY project/abstracto-backend/"
     full_path = file_path + file_name + '.jpg'
     urllib.request.urlretrieve(url, full_path)
 
